@@ -12,7 +12,9 @@ body {
 .eat-burger:hover, .add-burger:hover, .delete-burger:hover {
   opacity: 0.8;
 }
-
 .alert {
   font-size: 1rem;
+}
+.modal-header, .modal-footer {
+  background-color: antiquewhite;
 }

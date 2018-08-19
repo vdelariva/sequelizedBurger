@@ -1,37 +1,40 @@
-// var express = require("express");
-// var router = express.Router();
-// var burger = require("../models/burger.js");
 var db = require("../models");
 
 // Routes
+//
 module.exports = function (app) {
+// Get all burger data from db
   app.get("/", function(req, res) {
-    // Get all burger data from db
-    db.burger.findAll({})
+    db.burgers.findAll({})
     .then (function(cb){ 
       console.log(`cb: " ${JSON.stringify(cb)}`);
       res.render("index", {burgers:cb});
     });
   });
 
+  // Add new burger to db
   app.post("/api/burgers", function(req, res){
-    // Add new burger to db
-
-    // burger.create(["burger_name"], [req.body.burger_name], function(data){
-    db.burger.create({
+    db.burgers.create({
       burger_name: req.body.burger_name
     }).then (function(cb) {
       res.redirect("/");
     })
   });
 
-  app.put("/api/burgers/:id", function(req, res){
-    var condition = `id: ${req.params.id}`;
-    console.log(`condition: ${condition}`)
+  // Add customer to db
+  app.post("/api/customers", function(req, res){
+    db.customers.create({
+      customer_name: req.body.customer_name
+    }).then (function(cb) {
+      res.status(200).end();
+    })
+  });
 
-    // Update burger entry in db
-    db.burger.update({devoured: req.body.devoured}, {
-      where: {condition}
+  // Update burger entry in db
+  app.put("/api/burgers/:id", function(req, res){
+    var condition = {id: `${req.params.id}`};
+    db.burgers.update({devoured: req.body.devoured}, {
+      where: condition
     }).then (function(result){
       if (result.changedRows == 0){
         return res.status(404).end();
@@ -42,12 +45,11 @@ module.exports = function (app) {
     });
   });
 
+  // Delete burger entry in db
   app.delete("/api/burgers/:id", function(req, res){
-    var condition = `id: ${req.params.id}`;
-
-    // Delete burger entry in db
-    db.burger.destroy({
-      where: {condition}
+    var condition = {id: `${req.params.id}`};
+    db.burgers.destroy({
+      where: condition
     }).then (function(result){
       if (result.affectedRows == 0){
         return res.status(404).end();
@@ -58,4 +60,3 @@ module.exports = function (app) {
     })
   })
 }
-// module.exports = router;

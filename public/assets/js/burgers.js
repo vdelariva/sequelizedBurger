@@ -1,5 +1,6 @@
 // Static JS
 $(document).ready(function(){
+  // Add Burger
   $(".add-burger").on("click", function(event) {
     event.preventDefault();
 
@@ -26,14 +27,45 @@ $(document).ready(function(){
     }
   });
 
+  // Close alert
   $('.close').click(function() {
     $('.alert').hide();
   })
 
+  // Eat Burger - Display Modal to enter customer name
   $(".eat-burger").on("click", function(event) {
     event.preventDefault();
+    console.log('modal')
+    // Pop up modal to enter name
+    $(".modal-title").text("Who's Eating the Burger?");
+    $(".modal-body").html(`<form>`
+        +`<div class='form-group'>`
+        +`<label for='customerName' class='col-form-label'>Enter name:</label>`
+        +`<input type='text' class='form-control' id='customerName' value=''>`
+        +`</div>`);
 
-    var id = $(this).data("id");
+    $("#saveChanges").attr("data-key",$(this).data("id"));
+  });
+
+  // Save customer name and update burger status
+  $("#saveChanges").on("click", function(event) {
+    event.preventDefault();
+
+    var newCustomer = {
+      customer_name: $("#customerName").val().trim(),
+    };
+
+    // Send the POST request.
+    $.ajax("/api/customers", {
+      type: "POST",
+      data: newCustomer
+    }).then(
+      function() {
+        console.log("Customer ate a burger");
+      }
+    );
+
+    var id = $(this).attr("data-key");
     var eaten = {devoured: true};
 
     // Send the PUT request.
@@ -49,12 +81,11 @@ $(document).ready(function(){
     );
   });
 
+  // Delete burger from devoured list
   $(".delete-burger").on("click", function(event) {
     event.preventDefault();
 
     var id = $(this).data("id");
-
-    console.log(`delete id: ${id}`)
 
     // Send the DELETE request.
     $.ajax(`/api/burgers/${id}`, {
@@ -66,6 +97,7 @@ $(document).ready(function(){
     })
   })
 
+  // Return true if form not blank, else return false
   function validateForm() {
     var isValid = true;
     $('.validate').each(function () {
